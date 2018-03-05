@@ -1,14 +1,17 @@
 from django.conf import settings
+from django.utils.module_loading import import_string
 
-from .loader import WebpackLoader
+from .config import load_config
 
 
 _loaders = {}
 
 
 def get_loader(config_name):
+    config = load_config(config_name)
+    loader_cls = import_string(config['LOADER'])
     if config_name not in _loaders:
-        _loaders[config_name] = WebpackLoader(config_name)
+        _loaders[config_name] = loader_cls(config_name)
     return _loaders[config_name]
 
 
